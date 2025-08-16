@@ -1,0 +1,53 @@
+<?php
+/**
+ * Template para páginas
+ */
+
+get_header(); ?>
+
+<main id="primary" class="site-main">
+    <div class="container">
+        <?php while (have_posts()) : the_post(); ?>
+            
+            <article id="post-<?php the_ID(); ?>" <?php post_class('single-page'); ?>>
+                
+                <?php if (has_post_thumbnail() && !is_front_page()) : ?>
+                    <div class="page-featured-image">
+                        <?php the_post_thumbnail('large', array('class' => 'featured-image')); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <header class="entry-header">
+                    <?php if (!is_front_page()) : ?>
+                        <h1 class="entry-title"><?php the_title(); ?></h1>
+                    <?php endif; ?>
+                </header>
+                
+                <div class="entry-content">
+                    <?php the_content(); ?>
+                    
+                    <?php
+                    wp_link_pages(array(
+                        'before' => '<div class="page-links">Páginas: ',
+                        'after'  => '</div>',
+                    ));
+                    ?>
+                </div>
+                
+                <footer class="entry-footer">
+                    <?php edit_post_link('Editar página', '<span class="edit-link">', '</span>'); ?>
+                </footer>
+            </article>
+            
+            <!-- Comentários (se habilitado) -->
+            <?php if (comments_open() || get_comments_number()) : ?>
+                <div class="comments-section">
+                    <?php comments_template(); ?>
+                </div>
+            <?php endif; ?>
+            
+        <?php endwhile; ?>
+    </div>
+</main>
+
+<?php get_footer(); ?>

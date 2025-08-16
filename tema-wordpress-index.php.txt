@@ -1,0 +1,81 @@
+<?php
+/**
+ * Template principal do tema
+ */
+
+get_header(); ?>
+
+<main id="primary" class="site-main">
+    <div class="container">
+        <div class="content-area">
+            <div class="posts-container">
+                <?php if (have_posts()) : ?>
+                    <?php while (have_posts()) : the_post(); ?>
+                        <article id="post-<?php the_ID(); ?>" <?php post_class('post'); ?>>
+                            
+                            <?php if (has_post_thumbnail()) : ?>
+                                <div class="post-thumbnail">
+                                    <a href="<?php the_permalink(); ?>">
+                                        <?php the_post_thumbnail('large'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="post-content">
+                                <header class="entry-header">
+                                    <h2 class="post-title">
+                                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                    </h2>
+                                    
+                                    <div class="post-meta">
+                                        <span class="post-date">
+                                            <i class="fas fa-calendar"></i>
+                                            <?php echo get_the_date(); ?>
+                                        </span>
+                                        <span class="post-author">
+                                            <i class="fas fa-user"></i>
+                                            <?php the_author(); ?>
+                                        </span>
+                                        <span class="post-categories">
+                                            <i class="fas fa-folder"></i>
+                                            <?php the_category(', '); ?>
+                                        </span>
+                                    </div>
+                                </header>
+                                
+                                <div class="entry-content">
+                                    <div class="post-excerpt">
+                                        <?php the_excerpt(); ?>
+                                    </div>
+                                    <a href="<?php the_permalink(); ?>" class="read-more">
+                                        Ler mais <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    <?php endwhile; ?>
+                    
+                    <div class="pagination">
+                        <?php
+                        the_posts_pagination(array(
+                            'prev_text' => '<i class="fas fa-chevron-left"></i> Anterior',
+                            'next_text' => 'Próxima <i class="fas fa-chevron-right"></i>',
+                        ));
+                        ?>
+                    </div>
+                    
+                <?php else : ?>
+                    <div class="no-posts">
+                        <h2>Nenhum post encontrado</h2>
+                        <p>Desculpe, mas não há conteúdo disponível no momento.</p>
+                        <a href="<?php echo home_url('/'); ?>" class="btn">Voltar ao início</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <?php get_sidebar(); ?>
+        </div>
+    </div>
+</main>
+
+<?php get_footer(); ?>

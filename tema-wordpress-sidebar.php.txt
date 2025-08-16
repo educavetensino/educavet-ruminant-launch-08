@@ -1,0 +1,374 @@
+<?php
+/**
+ * Sidebar do tema
+ */
+
+if (!is_active_sidebar('sidebar-1')) {
+    return;
+}
+?>
+
+<aside id="secondary" class="widget-area sidebar">
+    
+    <!-- Widget de busca personalizado -->
+    <div class="widget search-widget">
+        <h3 class="widget-title">Buscar</h3>
+        <form role="search" method="get" class="search-form" action="<?php echo esc_url(home_url('/')); ?>">
+            <div class="search-input-group">
+                <input type="search" class="search-field" placeholder="Digite sua busca..." 
+                       value="<?php echo get_search_query(); ?>" name="s" />
+                <button type="submit" class="search-submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Posts populares -->
+    <div class="widget popular-posts-widget">
+        <h3 class="widget-title">Posts Populares</h3>
+        <?php
+        $popular_posts = get_posts(array(
+            'numberposts' => 5,
+            'meta_key' => 'post_views_count',
+            'orderby' => 'meta_value_num',
+            'order' => 'DESC'
+        ));
+        
+        if ($popular_posts) :
+        ?>
+            <ul class="popular-posts-list">
+                <?php foreach ($popular_posts as $post) : setup_postdata($post); ?>
+                    <li class="popular-post-item">
+                        <?php if (has_post_thumbnail()) : ?>
+                            <div class="popular-post-thumb">
+                                <a href="<?php the_permalink(); ?>">
+                                    <?php the_post_thumbnail('thumbnail'); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <div class="popular-post-content">
+                            <h4 class="popular-post-title">
+                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                            </h4>
+                            <div class="popular-post-meta">
+                                <span class="post-date"><?php echo get_the_date('j M Y'); ?></span>
+                                <span class="post-views"><?php echo tema_get_post_views(get_the_ID()); ?></span>
+                            </div>
+                        </div>
+                    </li>
+                <?php endforeach; wp_reset_postdata(); ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+    
+    <!-- Posts recentes -->
+    <div class="widget recent-posts-widget">
+        <h3 class="widget-title">Posts Recentes</h3>
+        <?php
+        $recent_posts = wp_get_recent_posts(array(
+            'numberposts' => 5,
+            'post_status' => 'publish'
+        ));
+        
+        if ($recent_posts) :
+        ?>
+            <ul class="recent-posts-list">
+                <?php foreach ($recent_posts as $post) : ?>
+                    <li class="recent-post-item">
+                        <?php if (has_post_thumbnail($post['ID'])) : ?>
+                            <div class="recent-post-thumb">
+                                <a href="<?php echo get_permalink($post['ID']); ?>">
+                                    <?php echo get_the_post_thumbnail($post['ID'], 'thumbnail'); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                        <div class="recent-post-content">
+                            <h4 class="recent-post-title">
+                                <a href="<?php echo get_permalink($post['ID']); ?>">
+                                    <?php echo $post['post_title']; ?>
+                                </a>
+                            </h4>
+                            <div class="recent-post-meta">
+                                <span class="post-date"><?php echo get_the_date('j M Y', $post['ID']); ?></span>
+                            </div>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+    
+    <!-- Widget de categorias -->
+    <div class="widget categories-widget">
+        <h3 class="widget-title">Categorias</h3>
+        <ul class="categories-list">
+            <?php
+            $categories = get_categories(array(
+                'orderby' => 'name',
+                'order'   => 'ASC',
+                'hide_empty' => true,
+            ));
+            
+            foreach ($categories as $category) :
+            ?>
+                <li class="category-item">
+                    <a href="<?php echo get_category_link($category->term_id); ?>" class="category-link">
+                        <span class="category-name"><?php echo $category->name; ?></span>
+                        <span class="category-count">(<?php echo $category->count; ?>)</span>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    
+    <!-- Widget de tags -->
+    <div class="widget tags-widget">
+        <h3 class="widget-title">Tags</h3>
+        <div class="tags-cloud">
+            <?php
+            $tags = get_tags(array(
+                'orderby' => 'name',
+                'order' => 'ASC',
+                'number' => 20,
+            ));
+            
+            foreach ($tags as $tag) :
+            ?>
+                <a href="<?php echo get_tag_link($tag->term_id); ?>" class="tag-link">
+                    <?php echo $tag->name; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    
+    <!-- Newsletter signup (exemplo) -->
+    <div class="widget newsletter-widget">
+        <h3 class="widget-title">Newsletter</h3>
+        <p class="newsletter-description">
+            Receba as últimas novidades e posts diretamente no seu email.
+        </p>
+        <form class="newsletter-form" action="#" method="post">
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Seu email" class="form-input" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+                Inscrever-se
+            </button>
+        </form>
+    </div>
+    
+    <!-- Widgets dinâmicos -->
+    <?php dynamic_sidebar('sidebar-1'); ?>
+    
+</aside><!-- #secondary -->
+
+<style>
+/* Estilos específicos da sidebar */
+.sidebar {
+    background: var(--cor-fundo-claro);
+    padding: 1.5rem;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.widget {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.widget:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.widget-title {
+    color: var(--cor-texto);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--cor-primaria);
+}
+
+/* Widget de busca */
+.search-input-group {
+    display: flex;
+    border: 1px solid var(--cor-borda);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.search-field {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.search-submit {
+    background: var(--cor-primaria);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-submit:hover {
+    background: var(--cor-accent);
+}
+
+/* Posts populares e recentes */
+.popular-posts-list,
+.recent-posts-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.popular-post-item,
+.recent-post-item {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.popular-post-item:last-child,
+.recent-post-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.popular-post-thumb,
+.recent-post-thumb {
+    flex-shrink: 0;
+}
+
+.popular-post-thumb img,
+.recent-post-thumb img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.popular-post-content,
+.recent-post-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.popular-post-title,
+.recent-post-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+}
+
+.popular-post-title a,
+.recent-post-title a {
+    color: var(--cor-texto);
+    text-decoration: none;
+}
+
+.popular-post-title a:hover,
+.recent-post-title a:hover {
+    color: var(--cor-primaria);
+}
+
+.popular-post-meta,
+.recent-post-meta {
+    font-size: 0.8rem;
+    color: var(--cor-texto-claro);
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Categorias */
+.categories-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.category-item {
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.category-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    color: var(--cor-texto);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.category-link:hover {
+    color: var(--cor-primaria);
+}
+
+.category-count {
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+}
+
+/* Tags */
+.tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-link {
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--cor-borda);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.tag-link:hover {
+    background: var(--cor-primaria);
+    color: white;
+    border-color: var(--cor-primaria);
+}
+
+/* Newsletter */
+.newsletter-description {
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.newsletter-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-top: 2rem;
+    }
+    
+    .popular-post-thumb img,
+    .recent-post-thumb img {
+        width: 50px;
+        height: 50px;
+    }
+}
+</style>
